@@ -16,10 +16,10 @@ import {
   Text,
   useColorScheme,
   View,
+  Button
 } from 'react-native';
-// import { BleManager } from 'react-native-ble-plx';
-// export const manager = new BleManager();
 import BluetoothSerial from "react-native-bluetooth-serial";
+import Tts from 'react-native-tts';
 
 import {
   Colors,
@@ -108,17 +108,29 @@ const App: () => Node = () => {
 
   useEffect(() => {
     console.log('use effect')
-    getStatusFromDevice();
-    getPairedList()
-    btManager.on("bluetoothEnabled", () => {
-      console.log('bt is enabled');
-      setBluetoothStatus(true);
-    });
-    btManager.on("bluetoothDisabled", () => {
-      console.log('bt is not enabled');
-      setBluetoothStatus(false);
-    });
+    // getStatusFromDevice();
+    // getPairedList()
+    // btManager.on("bluetoothEnabled", () => {
+    //   console.log('bt is enabled');
+    //   setBluetoothStatus(true);
+    // });
+    // btManager.on("bluetoothDisabled", () => {
+    //   console.log('bt is not enabled');
+    //   setBluetoothStatus(false);
+    // });
+
+    Tts.setDefaultLanguage('en-IE');
+    // Tts.setDefaultRate(0.6);
+    Tts.addEventListener('tts-start', event => console.log('start', event));
+    Tts.addEventListener('tts-finish', event => console.log('finish', event));
+    Tts.addEventListener('tts-cancel', event => console.log('cancel', event));
   }, []);
+
+  const speak = () => {
+    console.log('speak')
+    Tts.stop();
+    Tts.speak('hey mom lets have a pizza');
+  }
 
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -143,6 +155,7 @@ const App: () => Node = () => {
           <Section title="Is bluetooth connected">
             bluetoothConnected = {isConnected ? 'true' : 'false'}
           </Section>
+          <Button title="click to speak" onPress={speak}/>
           <LearnMoreLinks />
         </View>
       </ScrollView>
