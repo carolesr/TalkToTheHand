@@ -1,15 +1,6 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
-
 import React, { useState, useEffect } from 'react';
 import type {Node} from 'react';
 import {
-  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -20,6 +11,11 @@ import {
 } from 'react-native';
 import BluetoothSerial from "react-native-bluetooth-serial";
 import Tts from 'react-native-tts';
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import 'react-native-gesture-handler';
+import HomeScreen from './src/screens/HomeScreen'
 
 import {
   Colors,
@@ -55,6 +51,9 @@ const Section = ({children, title}): Node => {
     </View>
   );
 };
+
+
+const Stack = createStackNavigator();
 
 const App: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -119,7 +118,7 @@ const App: () => Node = () => {
     //   setBluetoothStatus(false);
     // });
 
-    Tts.setDefaultLanguage('en-IE');
+    Tts.setDefaultLanguage('pt-BR');
     // Tts.setDefaultRate(0.6);
     Tts.addEventListener('tts-start', event => console.log('start', event));
     Tts.addEventListener('tts-finish', event => console.log('finish', event));
@@ -129,37 +128,45 @@ const App: () => Node = () => {
   const speak = () => {
     console.log('speak')
     Tts.stop();
-    Tts.speak('hey mom lets have a pizza');
+    Tts.speak('oi pai o que voce ta fazendo');
   }
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Is bluetooth enabled">
-            bluetoothEnabled = {btStatus ? 'true' : 'false'}
-          </Section>
-          <Section title="Paired devices">
-            {paired}
-          </Section>
-          <Section title="Messages">
-            {messages}
-          </Section>
-          <Section title="Is bluetooth connected">
-            bluetoothConnected = {isConnected ? 'true' : 'false'}
-          </Section>
-          <Button title="click to speak" onPress={speak}/>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    // <SafeAreaView style={backgroundStyle}>
+    //   <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+    //   <ScrollView
+    //     contentInsetAdjustmentBehavior="automatic"
+    //     style={backgroundStyle}>
+    //     <Header />
+    //     <View
+    //       style={{
+    //         backgroundColor: isDarkMode ? Colors.black : Colors.white,
+    //       }}>
+    //       <Section title="Is bluetooth enableddd">
+    //         bluetoothEnabled = {btStatus ? 'true' : 'false'}
+    //       </Section>
+    //       <Section title="Paired devices">
+    //         {paired}
+    //       </Section>
+    //       <Section title="Messages">
+    //         {messages}
+    //       </Section>
+    //       <Section title="Is bluetooth connected">
+    //         bluetoothConnected = {isConnected ? 'true' : 'false'}
+    //       </Section>
+    //       <Button title="click to speak" onPress={speak}/>
+    //       <LearnMoreLinks />
+    //     </View>
+    //   </ScrollView>
+    // </SafeAreaView>
   );
 };
 
