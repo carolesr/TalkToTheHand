@@ -2,75 +2,71 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Button, Image, Text, TouchableOpacity } from 'react-native';
 
 const HomeScreen = props => {
-    
+
     return (
-        // <View style={styles.background}>
-            <View style={styles.screen}>
-                <View style={styles.imageContainer}>
-                    <Image
-                        style={styles.image}
-                        source={require('../assets/logo.png')}
-                    />
-                </View>
+        <View style={styles.screen}>
+            <View style={styles.imageContainer}>
+                <Image
+                    style={styles.image}
+                    source={require('../assets/logo.png')}
+                />
+            </View>
+            <View style={styles.buttonContainer}>
+                <View style={styles.button}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
                             props.navigation.push('Talk');
                             console.log('oi')
                         }}>
-                        <Text style={styles.textButton}>Home</Text>
+                        <Text style={styles.textButton}>falar</Text>
                     </TouchableOpacity>
+                </View>
+                <View style={styles.button}>
+                    <TouchableOpacity activeOpacity={0.4} onPress={() => {
+                            props.navigation.push('Talk');
+                            console.log('oi')
+                        }}>
+                        <Text style={styles.textButton}>calibrar</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        // </View>
+        </View>
     )
 };
 
 const styles = StyleSheet.create({
-    background: {
-        backgroundColor: 'white'
-    },
     screen: {
         flex: 1,
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 100,
-        marginBottom: 150,
-        backgroundColor: 'white',
+        borderColor: "black",
     },
-    // button: {
-    //     width: '70%',
-    //     borderWidth: 4,
-    //     borderRadius: 6,
-    //     borderColor: "#002c4f"
-    // },
     image: {
         width: '100%',
-        height: '72%'
+        height: '44%',
     },
     imageContainer: {
         flex: 1,
         alignContent: 'center',
         justifyContent: 'center',
-        width: '80%',
-        height: '80%'
+        width: '70%',
     },
-    textButtonContainer: {
-        // flex: 1,
-        // justifyContent: 'center',
-        // alignItems: 'center',
-        // width: '60%',
-        // maxHeight: 40,
-        // borderWidth: 1,
-        // borderRadius: 6,
-        // borderColor: "#002c4f",
-        // backgroundColor: "#002c4f",
+    buttonContainer:{
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+    },
+    button: {
+        width: '50%',
     },
     textButton: {
         color: 'white',
-        paddingVertical: 10,
-        paddingHorizontal: 100,
-        backgroundColor: "#002c4f",
+        paddingVertical: 30,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 18,
+        backgroundColor: "#300055",
         borderWidth: 1,
         borderRadius: 6,
-        borderColor: "#002c4f",
+        borderColor: "white",
     },
 });
 

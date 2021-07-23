@@ -13,10 +13,7 @@ const Navigator = () => {
   
   const AppTheme = {
     colors: {
-      background: 'white',
-      // text: 'white',
-      // card: '#300055',
-      // border: '#300055'
+      background: 'white'
     },
   };
 
@@ -29,7 +26,8 @@ const Navigator = () => {
         },
         headerTintColor: 'white',
         headerTitleStyle: {
-        alignSelf: 'center'
+          alignSelf: 'center',
+          fontWeight: 'bold'
         },
         headerLeft: null //desabilita back button
     }
