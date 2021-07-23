@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Button, Image, Text, TouchableOpacity } from 'react-native';
 
-const HomeScreen = props => {
+const TalkScreen = props => {
     
+
     return (
         // <View style={styles.background}>
             <View style={styles.screen}>
-                <View style={styles.imageContainer}>
-                    <Image
-                        style={styles.image}
-                        source={require('../assets/logo.png')}
-                    />
-                </View>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
-                            props.navigation.push('Talk');
-                            console.log('oi')
+                            // props.navigation.push('ProductScreen', {products: listProducts});
+                            console.log('aaaa');
+                            props.navigation.goBack();
                         }}>
-                        <Text style={styles.textButton}>Home</Text>
+                        <Text style={styles.textButton}>Talk</Text>
                     </TouchableOpacity>
             </View>
         // </View>
@@ -33,7 +29,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 100,
         marginBottom: 150,
-        backgroundColor: 'white',
+        backgroundColor: 'white'
     },
     // button: {
     //     width: '70%',
@@ -74,4 +70,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default HomeScreen
+export default TalkScreen
