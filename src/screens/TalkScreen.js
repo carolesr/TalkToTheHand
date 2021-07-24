@@ -1,72 +1,159 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Button, Image, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Button, Image, Text, TextInput, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+import Footer from './../components/Footer'
 
 const TalkScreen = props => {
-    
 
+    const [text, setText] = useState('');
+    const [word, setWord] = useState('');
+    
     return (
-        // <View style={styles.background}>
-            <View style={styles.screen}>
+        <View style={styles.screen}>
+
+            <View style={styles.container}>
+
+                <View style={styles.connectionContainer}>
+                    <Icon name="circle" size={10} color="#15810B" />
+                    <Text style={styles.connection}> conectado</Text>
+                </View>
+
+                <View style={styles.textArea}>
+                    <TextInput
+                        multiline={true}
+                        style={styles.text}
+                        value={text}
+                        onChangeText={t => setText(t)}
+                    />
+                </View>
+
+                <View style={styles.icon}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
-                            // props.navigation.push('ProductScreen', {products: listProducts});
-                            console.log('aaaa');
-                            props.navigation.goBack();
+                            console.log('a')
+                            setWord(word + 'a')
                         }}>
-                        <Text style={styles.textButton}>Talk</Text>
+                        <Icon name="volume-up" size={30} color="#300055" />
                     </TouchableOpacity>
+                </View>
+
+                <View style={styles.wordArea}>
+                    <TextInput
+                        style={styles.word}
+                        value={word}
+                        onChangeText={w => setWord(w)}
+                    />
+                </View>
+
+                <View>
+                    <TouchableOpacity activeOpacity={0.4} onPress={() => {
+                            setText('')
+                        }}>
+                        <Text style={styles.textButtonNegative}>limpar</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        // </View>
+
+            <View style={styles.buttonContainer}>
+                <View style={styles.button}>
+                    <TouchableOpacity activeOpacity={0.4} onPress={() => {
+                            props.navigation.pop();
+                        }}>
+                        <Text style={styles.textButton}>voltar</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.button}>
+                    <TouchableOpacity activeOpacity={0.4} onPress={() => {
+                            // props.navigation.push('Calibration');
+                            setText(text + ' ' + word)
+                        }}>
+                        <Text style={styles.textButton}>conectar</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+            
+        </View>
     )
 };
 
 const styles = StyleSheet.create({
-    background: {
-        backgroundColor: 'white'
-    },
     screen: {
         flex: 1,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: "#15810B",
+    },
+    container: {
+        flex: 1,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        width: '100%',
+    },
+    connectionContainer: {
+        flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        marginTop: 100,
-        marginBottom: 150,
-        backgroundColor: 'white'
     },
-    // button: {
-    //     width: '70%',
-    //     borderWidth: 4,
-    //     borderRadius: 6,
-    //     borderColor: "#002c4f"
-    // },
-    image: {
-        width: '100%',
-        height: '72%'
+    connection: {
+        color: '#15810B',
+        paddingVertical: 30,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 18,
     },
-    imageContainer: {
-        flex: 1,
-        alignContent: 'center',
-        justifyContent: 'center',
+    textArea: {
+        borderWidth: 2,
+        borderColor: '#300055',
+        backgroundColor: 'rgba(245,233,254,0.3)',
         width: '80%',
-        height: '80%'
+        height: '40%',
     },
-    textButtonContainer: {
-        // flex: 1,
-        // justifyContent: 'center',
-        // alignItems: 'center',
-        // width: '60%',
-        // maxHeight: 40,
-        // borderWidth: 1,
-        // borderRadius: 6,
-        // borderColor: "#002c4f",
-        // backgroundColor: "#002c4f",
+    text: {
+        color: '#300055',
+        fontSize: 18,
+    },
+    wordArea: {
+        borderBottomWidth: 2,
+        borderColor: '#300055',
+        backgroundColor: 'rgba(245,233,254,0.3)',
+        textAlign: 'center',
+        width: '70%',
+        height: '8%',
+        margin: 20
+    },
+    word: {
+        color: '#300055',
+        fontSize: 24,
+        textAlign: 'center',
+    },
+    icon: {,
+        margin: 30
+    },
+    buttonContainer:{
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+    },
+    button: {
+        width: '50%',
     },
     textButton: {
         color: 'white',
-        paddingVertical: 10,
-        paddingHorizontal: 100,
-        backgroundColor: "#002c4f",
+        paddingVertical: 30,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 18,
+        backgroundColor: "#300055",
         borderWidth: 1,
         borderRadius: 6,
-        borderColor: "#002c4f",
+        borderColor: "white",
+    },
+    textButtonNegative: {
+        color: '#300055',
+        paddingVertical: 30,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 18,
     },
 });
 

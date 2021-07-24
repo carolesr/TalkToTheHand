@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Button, Image, Text, TouchableOpacity } from 'react-native';
 
+import Footer from './../components/Footer'
+
 const HomeScreen = props => {
 
     return (
@@ -15,15 +17,13 @@ const HomeScreen = props => {
                 <View style={styles.button}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
                             props.navigation.push('Talk');
-                            console.log('oi')
                         }}>
                         <Text style={styles.textButton}>falar</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.button}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
-                            props.navigation.push('Talk');
-                            console.log('oi')
+                            props.navigation.push('Calibration');
                         }}>
                         <Text style={styles.textButton}>calibrar</Text>
                     </TouchableOpacity>
