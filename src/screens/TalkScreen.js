@@ -67,7 +67,7 @@ const TalkScreen = props => {
                             // props.navigation.push('Calibration');
                             setText(text + ' ' + word)
                         }}>
-                        <Text style={styles.textButton}>conectar</Text>
+                        <Text style={styles.textButton}>calibrar</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         textAlign: 'center',
     },
-    icon: {,
+    icon: {
         margin: 30
     },
     buttonContainer:{

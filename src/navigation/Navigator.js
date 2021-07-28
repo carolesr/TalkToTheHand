@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import 'react-native-gesture-handler';
+
 import HomeScreen from './../screens/HomeScreen'
 import TalkScreen from './../screens/TalkScreen'
 import CalibrationScreen from './../screens/CalibrationScreen'
+import ConnectionScreen from './../screens/ConnectionScreen'
 
 
 const Navigator = () => {
@@ -50,6 +52,11 @@ const Navigator = () => {
             name="Calibration"
             component={CalibrationScreen}
             options={screenOptions('calibrar')}
+          />
+          <Stack.Screen
+            name="Connection"
+            component={ConnectionScreen}
+            options={screenOptions('conectar')}
           />
         </Stack.Navigator>
       </NavigationContainer>

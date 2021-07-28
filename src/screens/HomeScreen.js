@@ -23,9 +23,9 @@ const HomeScreen = props => {
                 </View>
                 <View style={styles.button}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
-                            props.navigation.push('Calibration');
+                            props.navigation.push('Connection');
                         }}>
-                        <Text style={styles.textButton}>calibrar</Text>
+                        <Text style={styles.textButton}>conectar</Text>
                     </TouchableOpacity>
                 </View>
             </View>
