@@ -5,7 +5,7 @@ import BluetoothSerial from "react-native-bluetooth-serial";
 
 const ConnectionScreen = props => {
 
-    const btManager = BluetoothSerial;
+    const btManager = BluetoothSerial//props.route.params.manager;
 
     const [btStatus, setBtStatus] = useState(false);
     const [isConnected, setIsConnected] = useState(false);
@@ -14,8 +14,14 @@ const ConnectionScreen = props => {
     const [unpairedDevices, setUnpairedDevices] = useState([]);
     const [messages, setMessages] = useState('start');
 
+    // YellowBox.ignoreWarnings([
+    //     'Non-serializable values were found in the navigation state',
+    // ]);
+
     useEffect(() => {
+        console.log(btManager)
         getStatusFromDevice();
+        // if (btStatus)
         getPairedList();
 
     }, [])
@@ -40,7 +46,7 @@ const ConnectionScreen = props => {
 
     const gloveIsPaired = () => {
         let glove = pairedDevices.filter(device => {
-            return device.name == 'HC-6'
+            return device.name == 'HC-0'
         })
         return glove.length > 0;
     }
@@ -61,6 +67,14 @@ const ConnectionScreen = props => {
                 </View>
             );
         };
+
+    const connectToGlove = async () => {
+        console.log('get status')
+        const hc = await btManager.connect('98:D3:71:FD:5A:D7');
+        console.log(hc)
+        console.log('conectado?')
+        // setConnected(true);
+    };
 
     const renderConnection = () => {
         console.log('render conectionnnnnnnn')
@@ -86,7 +100,7 @@ const ConnectionScreen = props => {
                     <View style={styles.button}>
                         <TouchableOpacity activeOpacity={0.4} onPress={() => {
                                 console.log('conectar')
-                                setIsConnected(true)
+                                connectToGlove()
                             }}>
                             <Text style={styles.textButton}>conectar</Text>
                         </TouchableOpacity>

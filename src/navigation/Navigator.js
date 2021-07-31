@@ -9,7 +9,7 @@ import CalibrationScreen from './../screens/CalibrationScreen'
 import ConnectionScreen from './../screens/ConnectionScreen'
 
 
-const Navigator = () => {
+const Navigator = props => {
     
   const Stack = createStackNavigator();
   

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Button, Image, Text, TouchableOpacity } from 'react-native';
 
-import Footer from './../components/Footer'
+import BluetoothSerial from "react-native-bluetooth-serial";
 
 const HomeScreen = props => {
+    
+    const btManager = BluetoothSerial;
 
     return (
         <View style={styles.screen}>
@@ -16,6 +18,8 @@ const HomeScreen = props => {
             <View style={styles.buttonContainer}>
                 <View style={styles.button}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
+                            console.log(btManager)
+                            console.log(JSON.stringify(btManager))
                             props.navigation.push('Talk');
                         }}>
                         <Text style={styles.textButton}>falar</Text>
@@ -23,6 +27,7 @@ const HomeScreen = props => {
                 </View>
                 <View style={styles.button}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
+                            console.log(btManager)
                             props.navigation.push('Connection');
                         }}>
                         <Text style={styles.textButton}>conectar</Text>

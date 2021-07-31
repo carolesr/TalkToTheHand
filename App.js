@@ -82,3 +82,22 @@ const App: () => Node = () => {
 };
 
 export default App;
+
+// {"navigation": 
+//   {"addListener": [Function addListener], 
+//     "canGoBack": [Function canGoBack],
+//      "dangerouslyGetParent": [Function dangerouslyGetParent], 
+//      "dangerouslyGetState": [Function anonymous], 
+//      "dispatch": [Function dispatch], 
+//      "goBack": [Function anonymous], 
+//      "isFocused": [Function isFocused], 
+//      "navigate": [Function anonymous], 
+//      "pop": [Function anonymous], 
+//      "popToTop": [Function anonymous], 
+//      "push": [Function anonymous], 
+//      "removeListener": [Function removeListener],
+//       "replace": [Function anonymous], 
+//       "reset": [Function anonymous], 
+//       "setOptions": [Function setOptions], 
+//       "setParams": [Function anonymous]}, 
+//   "route": {"key": "Talk-_TnBxSggd9qhDilAOTDXU", "name": "Talk", "params": {"teste": "teste"}}}
