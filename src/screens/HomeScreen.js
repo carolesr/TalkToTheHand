@@ -18,8 +18,6 @@ const HomeScreen = props => {
             <View style={styles.buttonContainer}>
                 <View style={styles.button}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
-                            //console.log(btManager)
-                            //console.log(JSON.stringify(btManager))
                             props.navigation.push('Talk');
                         }}>
                         <Text style={styles.textButton}>falar</Text>
@@ -27,10 +25,9 @@ const HomeScreen = props => {
                 </View>
                 <View style={styles.button}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
-                            //console.log(btManager)
-                            props.navigation.push('Connection');
+                            props.navigation.push('Calibration');
                         }}>
-                        <Text style={styles.textButton}>conectar</Text>
+                        <Text style={styles.textButton}>calibrar</Text>
                     </TouchableOpacity>
                 </View>
             </View>

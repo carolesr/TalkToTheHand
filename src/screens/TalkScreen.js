@@ -27,10 +27,6 @@ const TalkScreen = props => {
 
     const setupAudio = () => {
         Tts.setDefaultLanguage('pt-BR');
-        // Tts.setDefaultRate(0.6);
-        // Tts.addEventListener('tts-start', event => console.log('start', event));    
-        // Tts.addEventListener('tts-finish', event => console.log('finish', event));  
-        // Tts.addEventListener('tts-cancel', event => console.log('cancel', event));  
     }
 
     const speak = value => {
