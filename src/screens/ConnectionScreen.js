@@ -46,7 +46,7 @@ const ConnectionScreen = props => {
 
     const gloveIsPaired = () => {
         let glove = pairedDevices.filter(device => {
-            return device.name == 'HC-0'
+            return device.name == 'HC-06'
         })
         return glove.length > 0;
     }

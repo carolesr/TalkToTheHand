@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { LogBox } from 'react-native';
 
 import BluetoothSerial from "react-native-bluetooth-serial";
+import Tts from 'react-native-tts';
 
 const TalkScreen = props => {
 
@@ -20,26 +21,40 @@ const TalkScreen = props => {
     useEffect(() => {
         console.log('use effect')
         connectToGlove();
-        lostConnection();   
-        readMessages();    
+        lostConnection(); 
+        setupAudio();
     },[])
 
+    const setupAudio = () => {
+        Tts.setDefaultLanguage('pt-BR');
+        // Tts.setDefaultRate(0.6);
+        // Tts.addEventListener('tts-start', event => console.log('start', event));    
+        // Tts.addEventListener('tts-finish', event => console.log('finish', event));  
+        // Tts.addEventListener('tts-cancel', event => console.log('cancel', event));  
+    }
+
+    const speak = value => {
+        Tts.stop();
+        Tts.speak(value);
+    }
+
     const connectToGlove = async () => {
-        console.log('get status')
-        const hc = await btManager.connect('3C:61:05:12:67:32');
-        // const hc = await btManager.connect('98:D3:71:FD:5A:D7'); HC06
-        console.log(hc)
-        console.log('conectado?')
-        setConnected(true);
+        console.log('connect to glove')
+        // const hc = await btManager.connect('3C:61:05:12:67:32') //ESP
+        const hc = await btManager.connect('98:D3:71:FD:5A:D7') //HC06
+            .then(res => console.log('Conectado com sucesso! ' + res.message))
+            .catch(err => console.log('Deu ruim pra conectar! ' + err.message))
+        readMessages();
+        setConnected(true);  
     };
 
     const lostConnection = async () => {
         console.log('subscribe to lost connection')
-        BluetoothSerial.on('connectionLost', e => {
+        btManager.on('connectionLost', e => {
             console.log("deconectou " + e)
             setConnected(false)
         });
-        BluetoothSerial.on('error', (err) => console.log(`Error: ${err.message}`))
+        btManager.on('error', (err) => console.log(`Error: ${err.message}`))
     }
 
     const readMessages = async () => {
@@ -51,14 +66,12 @@ const TalkScreen = props => {
             var auxText = '';
 
             btManager.on('read', message => {
-                console.log(message)
+                // console.log(message)
                 var dados = message['data'].replace(/(\r\n|\n|\r)/gm, "");
-                // console.log(dados)
-                // console.log(auxWord)
-                // console.log(auxText)
                 if (dados == '.') {
                     setText(auxText + auxWord + ' ')
                     setWord('')
+                    speak(auxWord)
 
                     auxText = auxText + auxWord + ' '
                     auxWord = ''
@@ -70,6 +83,15 @@ const TalkScreen = props => {
             });     
         });        
     }
+
+    const writeMessages = async message => {
+        btManager.write(message)
+        .then((res) => {
+            console.log('Successfuly wrote to device: ' + message)
+            //this.setState({ connected: true })
+        })
+        .catch((err) => console.log(err.message))
+    }
     
     return (
         <View style={styles.screen}>
@@ -77,8 +99,25 @@ const TalkScreen = props => {
             <View style={styles.container}>
 
                 <View style={styles.connectionContainer}>
-                    <Icon name="circle" size={10} color="#15810B" />
-                    <Text style={connected ? styles.connected : styles.disconnected}> {connected ? 'conectado' : 'desconectado'}</Text>
+                    <View style={styles.messageContainer}>
+                        <Icon 
+                            name="circle" 
+                            size={10} 
+                            color={connected ? "#15810B" : 'red'} 
+                            style={connected ? {marginVertical: 30} : {marginTop: 25}}
+                        />
+                        <Text style={connected ? styles.connected : styles.disconnected}> {connected ? 'conectado' : 'desconectado'}</Text>
+                    </View>
+                    {!connected ? 
+                        <View>
+                            <TouchableOpacity activeOpacity={0.4} onPress={() => {
+                                    console.log('CONECTAR')
+                                    connectToGlove()
+                                }}>
+                                <Text style={styles.textButtonNegative}>conectar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    : console.log()}
                 </View>
 
                 <View style={styles.textArea}>
@@ -92,8 +131,7 @@ const TalkScreen = props => {
 
                 <View style={styles.icon}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
-                            console.log(word)
-                            setWord('a')
+                            speak(text)
                         }}>
                         <Icon name="volume-up" size={30} color="#300055" />
                     </TouchableOpacity>
@@ -128,8 +166,7 @@ const TalkScreen = props => {
                 <View style={styles.button}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
                             // props.navigation.push('Calibration');
-                            console.log(text)
-                            //setText(text + ' ' + word)
+                            writeMessages('a');
                         }}>
                         <Text style={styles.textButton}>calibrar</Text>
                     </TouchableOpacity>
@@ -155,9 +192,16 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     connectionContainer: {
+        justifyContent: 'flex-start',
+
+    },
+    messageContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
+        // borderWidth:1,
+        borderColor:'green',
+        // marginTop: 30
     },
     connected: {
         color: '#15810B',
@@ -168,10 +212,15 @@ const styles = StyleSheet.create({
     },
     disconnected: {
         color: 'red',
-        paddingVertical: 30,
+        paddingTop: 30,
+        paddingBottom: 10,
+        // paddingVertical: 30,
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 18,
+    },
+    icon: {
+        margin: 30
     },
     textArea: {
         borderWidth: 2,
@@ -198,9 +247,6 @@ const styles = StyleSheet.create({
         fontSize: 24,
         textAlign: 'center',
     },
-    icon: {
-        margin: 30
-    },
     buttonContainer:{
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -221,10 +267,12 @@ const styles = StyleSheet.create({
     },
     textButtonNegative: {
         color: '#300055',
-        paddingVertical: 30,
+        paddingBottom: 30,
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 18,
+        // borderWidth: 1,
+        borderColor: 'pink'
     },
 });
 
