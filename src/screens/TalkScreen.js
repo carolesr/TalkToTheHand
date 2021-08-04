@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Button, Image, Text, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { colors } from '../assets/colors'
 import { LogBox } from 'react-native';
 
 import BluetoothSerial from "react-native-bluetooth-serial";
@@ -38,10 +39,16 @@ const TalkScreen = props => {
         console.log('connect to glove')
         // const hc = await btManager.connect('3C:61:05:12:67:32') //ESP
         const hc = await btManager.connect('98:D3:71:FD:5A:D7') //HC06
-            .then(res => console.log('Conectado com sucesso! ' + res.message))
-            .catch(err => console.log('Deu ruim pra conectar! ' + err.message))
-        readMessages();
-        setConnected(true);  
+            .then(res => {
+                console.log('Conectado com sucesso! ' + res.message)    
+                setConnected(true); 
+                //setErrorMessage(res.message)
+            })
+            .catch(err => {
+                console.log('Deu ruim pra conectar! ' + err.message)
+                setConnected(false)
+                //setErrorMessage(err.message)
+            }) 
     };
 
     const lostConnection = async () => {
@@ -99,7 +106,7 @@ const TalkScreen = props => {
                         <Icon 
                             name="circle" 
                             size={10} 
-                            color={connected ? "#15810B" : 'red'} 
+                            color={connected ? colors.success : colors.error} 
                             style={connected ? {marginVertical: 30} : {marginTop: 25}}
                         />
                         <Text style={connected ? styles.connected : styles.disconnected}> {connected ? 'conectado' : 'desconectado'}</Text>
@@ -116,7 +123,7 @@ const TalkScreen = props => {
                     : console.log()}
                 </View>
 
-                <View style={styles.textArea}>
+                <View style={[styles.textArea, connected ? { borderColor: colors.basePurple } : {borderColor: colors.error}]}>
                     <TextInput
                         multiline={true}
                         style={styles.text}
@@ -129,11 +136,11 @@ const TalkScreen = props => {
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
                             speak(text)
                         }}>
-                        <Icon name="volume-up" size={30} color="#300055" />
+                        <Icon name="volume-up" size={30} color={colors.basePurple} />
                     </TouchableOpacity>
                 </View>
 
-                <View style={styles.wordArea}>
+                <View style={[styles.wordArea, connected ? { borderColor: colors.basePurple } : {borderColor: colors.error}]}>
                     <TextInput
                         style={styles.word}
                         value={word}
@@ -159,14 +166,14 @@ const TalkScreen = props => {
                         <Text style={styles.textButton}>voltar</Text>
                     </TouchableOpacity>
                 </View>
-                <View style={styles.button}>
+                {/* <View style={styles.button}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
                             // props.navigation.push('Calibration');
                             writeMessages('a');
                         }}>
                         <Text style={styles.textButton}>calibrar</Text>
                     </TouchableOpacity>
-                </View>
+                </View> */}
             </View>
             
         </View>
@@ -178,8 +185,8 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderWidth: 1,
-        borderColor: "#15810B",
+        // borderWidth: 1,
+        // borderColor: "#15810B",
     },
     container: {
         flex: 1,
@@ -200,14 +207,14 @@ const styles = StyleSheet.create({
         // marginTop: 30
     },
     connected: {
-        color: '#15810B',
+        color: colors.success,
         paddingVertical: 30,
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 18,
     },
     disconnected: {
-        color: 'red',
+        color: colors.error,
         paddingTop: 30,
         paddingBottom: 10,
         // paddingVertical: 30,
@@ -220,26 +227,26 @@ const styles = StyleSheet.create({
     },
     textArea: {
         borderWidth: 2,
-        borderColor: '#300055',
-        backgroundColor: 'rgba(245,233,254,0.3)',
+        borderColor: colors.basePurple,
+        backgroundColor: colors.lightPurple,
         width: '80%',
         height: '40%',
     },
     text: {
-        color: '#300055',
+        color: colors.basePurple,
         fontSize: 18,
     },
     wordArea: {
         borderBottomWidth: 2,
-        borderColor: '#300055',
-        backgroundColor: 'rgba(245,233,254,0.3)',
+        borderColor: colors.basePurple,
+        backgroundColor: colors.lightPurple,
         textAlign: 'center',
         width: '70%',
         height: '8%',
         margin: 20
     },
     word: {
-        color: '#300055',
+        color: colors.basePurple,
         fontSize: 24,
         textAlign: 'center',
     },
@@ -248,7 +255,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
     },
     button: {
-        width: '50%',
+        width: '100%',
     },
     textButton: {
         color: 'white',
@@ -256,13 +263,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 18,
-        backgroundColor: "#300055",
+        backgroundColor: colors.basePurple,
         borderWidth: 1,
         borderRadius: 6,
         borderColor: "white",
     },
     textButtonNegative: {
-        color: '#300055',
+        color: colors.basePurple,
         paddingBottom: 30,
         textAlign: 'center',
         fontWeight: 'bold',

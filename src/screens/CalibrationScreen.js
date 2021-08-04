@@ -11,8 +11,8 @@ const CalibrationScreen = props => {
     const [errorMessage, setErrorMessage] = useState('');
 
     const [instructionMessage, setInstructionMessage] = useState('aqui você ajusta os sensores à sua mão');
-    const [progressMessage, setProgressMessage] = useState('aguarde...');
-    const [messageColor, setMessageColor] = useState(colors.alert);
+    const [progressMessage, setProgressMessage] = useState('calibragem finalizada com sucesso :)');
+    const [messageColor, setMessageColor] = useState(colors.success);
     const [showButton, setShowButton] = useState(true);
     const [buttonText, setButtonText] = useState('voltar');
     
@@ -35,7 +35,7 @@ const CalibrationScreen = props => {
             .catch(err => {
                 console.log('Deu ruim pra conectar! ' + err.message)
                 setConnected(false)
-                // setErrorMessage(err.message)
+                setErrorMessage(err.message)
             }) 
     };
     
@@ -108,7 +108,7 @@ const CalibrationScreen = props => {
                                 writeMessages('1')
                                 setInstructionMessage('feche e abra os dedos durante alguns segundos')
                                 setShowButton(false)
-                                setButtonText('cancelar')
+                                setButtonText('ok')
                             }}>
                             <Text style={styles.textButtonNegative}>começar</Text>
                         </TouchableOpacity>
@@ -146,12 +146,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
         width: '100%',
+        // borderWidth: 2,
+        borderColor: 'red'
     },
     connectionContainer: {
         // flex: 1,
         justifyContent: 'flex-start',
         // maxHeight: '25%',
-        // borderWidth: 3,
+        // borderWidth: 2,
         borderColor: 'black'
     },
     conectarContainer: {
@@ -234,7 +236,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '50%',
         maxHeight: '30%',
-        borderWidth: 1,
+        // borderWidth: 1,
         borderColor: 'red'
     }
 });

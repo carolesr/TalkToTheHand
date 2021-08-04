@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Button, Image, Text, TouchableOpacity } from 'react-native';
+import { colors } from '../assets/colors'
 
 import BluetoothSerial from "react-native-bluetooth-serial";
 
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 18,
-        backgroundColor: "#300055",
+        backgroundColor: colors.basePurple,
         borderWidth: 1,
         borderRadius: 6,
         borderColor: "white",
