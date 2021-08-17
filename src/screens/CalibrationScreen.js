@@ -2,21 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Button, Image, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { colors } from '../assets/colors'
+import { LogBox } from 'react-native';
 
 import BluetoothSerial from "react-native-bluetooth-serial";
 
 const CalibrationScreen = props => {
     
+    LogBox.ignoreLogs([
+        'Non-serializable values were found in the navigation state', ' Can\'t perform a React state update on an unmounted component.'
+        ]);
+    
     const [connected, setConnected] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [isCalibrated, setIsCalibrated] = useState(false);
 
     const [instructionMessage, setInstructionMessage] = useState('aqui você ajusta os sensores à sua mão');
-    const [progressMessage, setProgressMessage] = useState('calibragem finalizada com sucesso :)');
-    const [messageColor, setMessageColor] = useState(colors.success);
+    const [progressMessage, setProgressMessage] = useState('aguarde...');
+    const [messageColor, setMessageColor] = useState(colors.alert);
     const [showButton, setShowButton] = useState(true);
     const [buttonText, setButtonText] = useState('voltar');
     
-    const btManager = BluetoothSerial;
+    const btManager = BluetoothSerial// props.route.params.manager;
+    const callback = props.route.params.callback;
 
     useEffect(() => {
         connectToGlove();
@@ -25,17 +32,17 @@ const CalibrationScreen = props => {
 
     const connectToGlove = async () => {
         console.log('connect to glove')
-        // const hc = await btManager.connect('3C:61:05:12:67:32') //ESP
-        const hc = await btManager.connect('98:D3:71:FD:5A:D7') //HC06
+        const hc = await btManager.connect('3C:61:05:12:67:32') //ESP
+        // const hc = await btManager.connect('98:D3:71:FD:5A:D7') //HC06
             .then(res => {
                 console.log('Conectado com sucesso! ' + res.message)    
-                setConnected(true); 
-                setErrorMessage(res.message)
+                setConnected(true);  
+                readMessages(); 
             })
             .catch(err => {
                 console.log('Deu ruim pra conectar! ' + err.message)
                 setConnected(false)
-                setErrorMessage(err.message)
+                setErrorMessage('Não foi possível se conectar à luva')
             }) 
     };
     
@@ -44,13 +51,34 @@ const CalibrationScreen = props => {
         btManager.on('connectionLost', e => {
             console.log("deconectou " + e)
             setConnected(false)
-            setErrorMessage(e.message)
+            setErrorMessage('A conexão foi interrompida')
         });
         btManager.on('error', (err) => {
             console.log(`Error: ${err.message}`)
-            // setConnected(false)
-            // setErrorMessage(err.message)
         })
+    }
+
+    const readMessages = async () => {
+        console.log('read messages')
+
+        btManager.withDelimiter("\r\n").then(res => {
+            console.log("delimiter setup", res); 
+            btManager.on('read', message => {
+                var dados = message['data'].replace(/(\r\n|\n|\r)/gm, "");
+                if (dados != 'error') {
+                    setMessageColor(colors.success)
+                    setProgressMessage('calibragem finalizada com sucesso :)')
+                    setButtonText('ok')
+                    setIsCalibrated(true)
+                }
+                else {
+                    setMessageColor(colors.error)
+                    setProgressMessage('ocorreu um erro :( tente novamente')
+                    setButtonText('voltar')
+                    setIsCalibrated(false)
+                }
+            });     
+        });        
     }
     
     const writeMessages = async message => {
@@ -72,7 +100,6 @@ const CalibrationScreen = props => {
                                 name="circle" 
                                 size={10} 
                                 color={connected ? colors.success : colors.error} 
-                                // style={connected ? {marginVertical: 30} : {marginTop: 25}}
                             />
                             <Text style={connected ? styles.connected : styles.disconnected}> {connected ? 'conectado' : 'desconectado'}</Text>                            
                         </View>
@@ -96,7 +123,7 @@ const CalibrationScreen = props => {
                 <View style={styles.imageContainer}>
                     <Image
                         style={styles.image}
-                        source={require('../assets/logo.png')}
+                        source={require('../assets/calibragem.png')}
                     />
                 </View>
 
@@ -106,9 +133,8 @@ const CalibrationScreen = props => {
                         <TouchableOpacity activeOpacity={0.4} onPress={() => {
                                 console.log('começar')
                                 writeMessages('1')
-                                setInstructionMessage('feche e abra os dedos durante alguns segundos')
+                                setInstructionMessage('feche e abra os dedos durante 20 segundos')
                                 setShowButton(false)
-                                setButtonText('ok')
                             }}>
                             <Text style={styles.textButtonNegative}>começar</Text>
                         </TouchableOpacity>
@@ -124,6 +150,7 @@ const CalibrationScreen = props => {
                 <View style={styles.button}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
                             btManager.disconnect();
+                            callback(isCalibrated);
                             props.navigation.pop();
                         }}>
                         <Text style={styles.textButton}>{buttonText}</Text>
@@ -146,51 +173,33 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
         width: '100%',
-        // borderWidth: 2,
-        borderColor: 'red'
     },
     connectionContainer: {
-        // flex: 1,
         justifyContent: 'flex-start',
-        // maxHeight: '25%',
-        // borderWidth: 2,
-        borderColor: 'black'
     },
     conectarContainer: {
-        // borderWidth: 1,
-        borderColor: 'green',
-        // flex: 1,
-        // height: '10%',
         justifyContent: 'flex-end'
     },
     messageContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'center',
         alignItems: 'center',
         marginTop: 20,
-        // borderWidth:1,
-        borderColor:'blue',
-        // marginTop: 30
     },
     connected: {
         color: colors.success,
-        // paddingVertical: 30,
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 18,
     },
     disconnected: {
         color: colors.error,
-        // paddingTop: 30,
-        // paddingBottom: 10,
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 18,
     },
     instructionContainer: {
         width: '60%',
-        // borderWidth:1,
-        borderColor:'green',
     },
     text: {
         color: colors.basePurple,
@@ -223,8 +232,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 26,
-        // borderWidth: 1,
-        borderColor: 'pink'
     },
     image: {
         width: '100%',
@@ -236,8 +243,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '50%',
         maxHeight: '30%',
-        // borderWidth: 1,
-        borderColor: 'red'
     }
 });
 

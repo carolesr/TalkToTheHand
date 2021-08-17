@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, Button, Image, Text, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { colors } from '../assets/colors'
@@ -13,16 +13,21 @@ const TalkScreen = props => {
         'Non-serializable values were found in the navigation state', ' Can\'t perform a React state update on an unmounted component.'
         ]);
     
-    const btManager = BluetoothSerial;
+    const btManager = BluetoothSerial//props.route.params.manager;
+    const callback = props.route.params.callback;
 
     const [text, setText] = useState('');
     const [word, setWord] = useState('');
+    
+    const textRef = useRef('');
+    const wordRef = useRef('');
+
     const [connected, setConnected] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-        console.log('use effect')
         connectToGlove();
-        lostConnection(); 
+        lostConnection();
         setupAudio();
     },[])
 
@@ -35,65 +40,73 @@ const TalkScreen = props => {
         Tts.speak(value);
     }
 
+    const checkIsConnected = () => {
+        btManager.isConnected()
+            .then(message => {
+                console.log('then')
+                console.log(message)   
+                setConnected(message); 
+            })
+            .catch(message => {
+                console.log('catch')
+                console.log(message)
+                setConnected(false)
+            })
+    }
+
     const connectToGlove = async () => {
         console.log('connect to glove')
-        // const hc = await btManager.connect('3C:61:05:12:67:32') //ESP
-        const hc = await btManager.connect('98:D3:71:FD:5A:D7') //HC06
+        const hc = await btManager.connect('3C:61:05:12:67:32') //ESP
+        // const hc = await btManager.connect('98:D3:71:FD:5A:D7') //HC06
             .then(res => {
                 console.log('Conectado com sucesso! ' + res.message)    
-                setConnected(true); 
-                //setErrorMessage(res.message)
+                setConnected(true);  
+                readMessages(); 
             })
             .catch(err => {
                 console.log('Deu ruim pra conectar! ' + err.message)
                 setConnected(false)
-                //setErrorMessage(err.message)
+                setErrorMessage('Não foi possível se conectar à luva')
             }) 
     };
 
     const lostConnection = async () => {
-        console.log('subscribe to lost connection')
         btManager.on('connectionLost', e => {
             console.log("deconectou " + e)
             setConnected(false)
+            setErrorMessage('A conexão foi interrompida')
         });
-        btManager.on('error', (err) => console.log(`Error: ${err.message}`))
+        btManager.on('error', (err) => {
+            console.log(`Error: ${err.message}`)
+            // setConnected(false)
+            // setErrorMessage(err.message)
+        })
     }
 
     const readMessages = async () => {
         console.log('read messages')
 
-        BluetoothSerial.withDelimiter("\r\n").then(res => {
+        btManager.withDelimiter("\r\n").then(res => {
             console.log("delimiter setup", res); 
-            var auxWord = '';
-            var auxText = '';
 
             btManager.on('read', message => {
-                // console.log(message)
                 var dados = message['data'].replace(/(\r\n|\n|\r)/gm, "");
+                console.log('dados: ' + dados)
                 if (dados == '.') {
-                    setText(auxText + auxWord + ' ')
+                    speak(wordRef.current)
+                    const aux = textRef.current + wordRef.current + ' ';
+                    textRef.current = aux
+                    setText(aux)
+                    wordRef.current = ''
                     setWord('')
-                    speak(auxWord)
-
-                    auxText = auxText + auxWord + ' '
-                    auxWord = ''
                 }
-                else{
-                    setWord(auxWord + dados);
-                    auxWord = auxWord + dados;
+                else {
+                    const aux = wordRef.current + dados
+                    wordRef.current = aux
+                    setWord(aux);
                 }
             });     
         });        
-    }
-
-    const writeMessages = async message => {
-        btManager.write(message)
-        .then((res) => {
-            console.log('Successfuly wrote to device: ' + message)
-            //this.setState({ connected: true })
-        })
-        .catch((err) => console.log(err.message))
     }
     
     return (
@@ -101,23 +114,23 @@ const TalkScreen = props => {
 
             <View style={styles.container}>
 
-                <View style={styles.connectionContainer}>
+                 <View style={styles.connectionContainer}>
                     <View style={styles.messageContainer}>
                         <Icon 
                             name="circle" 
                             size={10} 
-                            color={connected ? colors.success : colors.error} 
-                            style={connected ? {marginVertical: 30} : {marginTop: 25}}
+                            color={connected ? colors.success : colors.error}
                         />
-                        <Text style={connected ? styles.connected : styles.disconnected}> {connected ? 'conectado' : 'desconectado'}</Text>
+                        <Text style={connected ? styles.connected : styles.disconnected}> {connected ? 'conectado' : 'desconectado'}</Text>                            
                     </View>
                     {!connected ? 
-                        <View>
+                        <View style={styles.conectarContainer}>                            
+                            <Text style={[styles.disconnected, {paddingVertical: 10}]}>{errorMessage}</Text>
                             <TouchableOpacity activeOpacity={0.4} onPress={() => {
                                     console.log('CONECTAR')
-                                    connectToGlove()
+                                    connectToGlove(false)
                                 }}>
-                                <Text style={styles.textButtonNegative}>conectar</Text>
+                                <Text style={[styles.textButtonNegative, {fontSize: 18, paddingBottom: 0}]}>conectar</Text>
                             </TouchableOpacity>
                         </View>
                     : console.log()}
@@ -150,6 +163,7 @@ const TalkScreen = props => {
 
                 <View>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
+                            textRef.current = ''
                             setText('')
                         }}>
                         <Text style={styles.textButtonNegative}>limpar</Text>
@@ -161,19 +175,12 @@ const TalkScreen = props => {
                 <View style={styles.button}>
                     <TouchableOpacity activeOpacity={0.4} onPress={() => {
                             btManager.disconnect();
+                            callback(true);
                             props.navigation.pop();
                         }}>
                         <Text style={styles.textButton}>voltar</Text>
                     </TouchableOpacity>
                 </View>
-                {/* <View style={styles.button}>
-                    <TouchableOpacity activeOpacity={0.4} onPress={() => {
-                            // props.navigation.push('Calibration');
-                            writeMessages('a');
-                        }}>
-                        <Text style={styles.textButton}>calibrar</Text>
-                    </TouchableOpacity>
-                </View> */}
             </View>
             
         </View>
@@ -185,8 +192,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'space-between',
         alignItems: 'center',
-        // borderWidth: 1,
-        // borderColor: "#15810B",
     },
     container: {
         flex: 1,
@@ -196,28 +201,25 @@ const styles = StyleSheet.create({
     },
     connectionContainer: {
         justifyContent: 'flex-start',
-
+        marginBottom: 20
     },
     messageContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'center',
         alignItems: 'center',
-        // borderWidth:1,
-        borderColor:'green',
-        // marginTop: 30
+        marginTop: 20,
+    },
+    conectarContainer: {
+        justifyContent: 'flex-end'
     },
     connected: {
         color: colors.success,
-        paddingVertical: 30,
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 18,
     },
     disconnected: {
         color: colors.error,
-        paddingTop: 30,
-        paddingBottom: 10,
-        // paddingVertical: 30,
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 18,
@@ -274,8 +276,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 18,
-        // borderWidth: 1,
-        borderColor: 'pink'
     },
 });
 
